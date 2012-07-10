@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Git-process : Scripts to help work with a good Git process" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Git-process</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/jdigger/git-process">View on GitHub</a>
+
+          <h1 id="project_title">Git-process</h1>
+          <h2 id="project_tagline">Scripts to help work with a good Git process</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/jdigger/git-process/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/jdigger/git-process/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Purpose</h1>
+
+<p>This provides an easy way to work with a sane git workflow process.</p>
+
+<h1>Installation</h1>
+
+<pre><code>$ gem install git-process
+</code></pre>
+
+<h1>Overview</h1>
+
+<ul>
+<li>
+<code>git new-fb</code> - Create a new feature branch based on the integration branch.</li>
+<li>
+<code>git sync</code> - Gets the latest changes that have happened on the integration branch, then pushes your changes to a "private" branch on the server.</li>
+<li>
+<code>git pull-request</code> - Creates a Pull Request for the current branch.</li>
+<li>
+<code>git to-master</code> - Rebase against the integration branch, then pushes to it.</li>
+</ul><h1>Workflow</h1>
+
+<p><em>The following assumes that the integration branch is "origin/master".</em></p>
+
+<h2>Code Review Using Pull Requests</h2>
+
+<ol>
+<li>When starting work on a new feature, use "<code>git new-fb feature-name</code>".
+
+<ul>
+<li>This creates a new branch called "<code>feature-name</code>" based on "<code>origin/master</code>".</li>
+</ul>
+</li>
+<li>After making some changes, if you want to pick up any changes other people have made, as well
+as save your work on the server, do "<code>git synch</code>".
+
+<ul>
+<li>That will merge in the changes that have occurred in "<code>origin/master</code>" and then push the
+result to the "<code>feature_branch</code>" branch to the server.</li>
+</ul>
+</li>
+<li>When you feel your work is ready for others to look at, do another "<code>git sync</code>" to post your
+changes to the server, and then "<code>git pull-request</code>" to ask someone to review your changes.</li>
+<li>If you get the thumbs up from the code-review, use "<code>git to-master</code>".
+
+<ul>
+<li>This will merge and push your changes into "<code>origin/master</code>", closing the pull request.</li>
+</ul>
+</li>
+<li>If you still need to make changes, do so and use "<code>git sync</code>" to keep your branch on the
+server for that feature updated with your work until all issues have been resolved.</li>
+</ol><h2>Working Alone or When Pairing</h2>
+
+<ol>
+<li>When starting work on a new feature, use "<code>git new-fb feature-name</code>".
+
+<ul>
+<li>This creates a new branch called "<code>feature-name</code>" based on "<code>origin/master</code>".</li>
+</ul>
+</li>
+<li>After making some changes, if you want to pick up any changes other people have made, as well
+as save your work on the server, do "<code>git synch</code>".
+
+<ul>
+<li>That will merge in the changes that have occurred in "<code>origin/master</code>" and then push the
+result to the "<code>feature_branch</code>" branch to the server.</li>
+</ul>
+</li>
+<li>When you are ready to merge your work into the mainline, "<code>git to-master</code>".
+
+<ul>
+<li>This will merge and push your changes into "<code>origin/master</code>"</li>
+</ul>
+</li>
+</ol><h1>Notes</h1>
+
+<ul>
+<li>It's assumed that you <strong><em>never</em></strong> do any work directly on "<code>master</code>": everything is done on a
+feature branch.  This is a much safer and more flexible practice, but may seem odd to
+people used to old VCSs. In addition to being a much better way of working in general,
+it is also a requirement to take advantage of Pull Request functionality.
+
+<ul>
+<li>After publishing changes to the main integration branch (i.e., "<code>git to-master</code>") the
+old feature branch is removed as part of cleanup. Git is then "parked" on a "<code>_parking_</code>"
+branch until a new feature branch is created. Work is not expected to be done on this
+branch, but any that is done is brought over to a newly created feature branch (i.e.,
+"<code>git new-fb</code>").</li>
+</ul>
+</li>
+<li>If there is a problem (such as a merge conflict), this will try to resolve such errors
+for you as much as it can do safely. When it can't do so in an automated way, it will try
+to tell you the process for doing so manually.</li>
+<li>The first time you use a GitHub feature (e.g., "<code>git pull-request</code>"), this will ask for your
+username and password. It does not store them, but instead uses them to get an OAuth2 token,
+which is stored in "<code>git config gitProcess.github.authToken</code>".</li>
+<li>If you want to use a different integration branch other than "<code>master</code>", set the
+"<code>gitProcess.integrationBranch</code>" configuration value. (e.g.,
+"<code>git config gitProcess.integrationBranch my-integ-branch</code>")</li>
+<li>This tries to respond "intelligently" to the use of 'rerere'.</li>
+</ul><h1>Contributing</h1>
+
+<h2>Coding Setup</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Added some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol><p>The tests are written for RSpec 2.</p>
+
+<h2>License</h2>
+
+<p>Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+
+<p><a href="http://www.apache.org/licenses/LICENSE-2.0" title="License Link">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Git-process maintained by <a href="https://github.com/jdigger">jdigger</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
